@@ -48,7 +48,7 @@ public sealed class DataTableColumnAttribute : Attribute
     /// <summary>
     /// Determines whether sorting is enabled on this column.
     /// </summary>
-    public bool? Orderable { get; set; }
+    public bool Orderable { get; set; } = false;
 
     /// <summary>
     /// Specifies other columns to sort alongside this one. Can be an integer index or an array of indices.
@@ -68,7 +68,7 @@ public sealed class DataTableColumnAttribute : Attribute
     /// <summary>
     /// Determines whether this column can be searched using the global search box.
     /// </summary>
-    public bool? Searchable { get; set; }
+    public bool Searchable { get; set; } = false;
 
     /// <summary>
     /// Sets the column title displayed in the table header.
@@ -83,7 +83,7 @@ public sealed class DataTableColumnAttribute : Attribute
     /// <summary>
     /// Indicates whether this column is visible in the table.
     /// </summary>
-    public bool? Visible { get; set; }
+    public bool Visible { get; set; } = true;
 
     /// <summary>
     /// Sets the fixed width for this column (e.g., "100px", "10%").
@@ -101,11 +101,11 @@ public sealed class DataTableColumnAttribute : Attribute
     /// Lower values have higher priority and are shown first on smaller screens. Columns with higher
     /// values will be hidden first as screen space becomes limited.
     /// </summary>
-    public int? ResponsivePriority { get; set; }
+    public int ResponsivePriority { get; set; } = -1;
 
     /// <summary>
     /// Specifies the display order of the column in the table.
-    /// Columns with lower values appear earlier. If null, default ordering is used.
+    /// Columns with lower values appear earlier. 
     /// </summary>
-    public int? Order { get; set; }
+    public int Order { get; set; } = -1;
 }

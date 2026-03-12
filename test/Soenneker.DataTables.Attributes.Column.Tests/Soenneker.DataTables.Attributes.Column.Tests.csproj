@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Soenneker.DataTables.Attributes.Column.csproj" />
+        <ProjectReference Include="..\..\src\Soenneker.DataTables.Attributes.Column\Soenneker.DataTables.Attributes.Column.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,11 +1,10 @@
-﻿using Soenneker.Tests.Unit;
-using Xunit;
+using Soenneker.Tests.Unit;
 
 namespace Soenneker.DataTables.Attributes.Column.Tests;
 
 public sealed class DataTableColumnAttributeTests : UnitTest
 {
-    [Fact]
+    [Test]
     public void Default()
     {
 

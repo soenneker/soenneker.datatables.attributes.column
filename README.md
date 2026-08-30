@@ -5,51 +5,60 @@
 
 # Soenneker.DataTables.Attributes.Column
 
-Attribute for defining DataTables column configuration metadata on properties or classes. This allows customization of column behavior, rendering, visibility, sorting, and more.
+`DataTableColumnAttribute` attaches DataTables column metadata to properties so a table-building layer can discover it through reflection.
 
-## Install
+## Installation
 
 ```bash
 dotnet add package Soenneker.DataTables.Attributes.Column
 ```
 
-## Quick start
+## Usage
 
 ```csharp
 using Soenneker.DataTables.Attributes.Column;
 
-public sealed class Request
+public sealed class CustomerRow
 {
-    [DataTableColumn]
-    public string? Value { get; init; }
+    [DataTableColumn(
+        Title = "Customer",
+        Data = "name",
+        Name = "name",
+        Searchable = true,
+        Orderable = true,
+        ResponsivePriority = 1,
+        Order = 0)]
+    public required string Name { get; init; }
+
+    [DataTableColumn(
+        Title = "Email",
+        Data = "contact.email",
+        DefaultContent = "—",
+        ClassName = "text-nowrap",
+        Width = "18rem",
+        Order = 1)]
+    public string? Email { get; init; }
+
+    [DataTableColumn(Visible = false, Order = 2)]
+    public Guid Id { get; init; }
 }
 ```
 
-Attribute for defining DataTables column configuration metadata on properties or classes. This allows customization of column behavior, rendering, visibility, sorting, and more.
+Read the metadata from a property with normal reflection:
 
-## What you get
+```csharp
+using System.Reflection;
 
-- `DataTableColumnAttribute` — Attribute for defining DataTables column configuration metadata on properties or classes. This allows customization of column behavior, rendering, visibility, sorting, and more.
+PropertyInfo property = typeof(CustomerRow).GetProperty(nameof(CustomerRow.Name))!;
+DataTableColumnAttribute? column = property.GetCustomAttribute<DataTableColumnAttribute>();
+```
 
-## API at a glance
+The package stores configuration only. Your application or a companion table builder must translate the attribute into the JavaScript DataTables column definition.
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `DataTableColumnAttribute.AriaTitle` | Sets the ARIA label for the column header, used for accessibility purposes. | Sets the ARIA label for the column header, used for accessibility purposes. |
-| `DataTableColumnAttribute.CellType` | Specifies the HTML cell type to be created for this column (e.g., "td", "th"). | Specifies the HTML cell type to be created for this column (e.g., "td", "th"). |
-| `DataTableColumnAttribute.ClassName` | A CSS class or space-separated list of classes to assign to each cell in the column. | A CSS class or space-separated list of classes to assign to each cell in the column. |
-| `DataTableColumnAttribute.ContentPadding` | Additional padding to add to the text content when calculating optimal column width. | Additional padding to add to the text content when calculating optimal column width. |
-| `DataTableColumnAttribute.DefaultContent` | Default static content to render in this column when no data is available. | Default static content to render in this column when no data is available. |
-| `DataTableColumnAttribute.Footer` | Sets the footer text content for this column. | Sets the footer text content for this column. |
-| `DataTableColumnAttribute.Name` | A name used for identifying the column programmatically (e.g., in column visibility APIs). | A name used for identifying the column programmatically (e.g., in column visibility APIs). |
-| `DataTableColumnAttribute.Orderable` | Determines whether sorting is enabled on this column. | Determines whether sorting is enabled on this column. |
-| `DataTableColumnAttribute.OrderData` | Specifies other columns to sort alongside this one. Can be an integer index or an array of indices. | Specifies other columns to sort alongside this one. Can be an integer index or an array of indices. |
-| `DataTableColumnAttribute.OrderDataType` | Defines a custom sort data type for the column (e.g., "dom-text", "dom-checkbox"). | Defines a custom sort data type for the column (e.g., "dom-text", "dom-checkbox"). |
-| `DataTableColumnAttribute.OrderSequence` | A sequence of sorting directions (e.g., ["asc", "desc"]) to apply in order when sorting this column. | A sequence of sorting directions (e.g., ["asc", "desc"]) to apply in order when sorting this column. |
-| `DataTableColumnAttribute.Searchable` | Determines whether this column can be searched using the global search box. | Determines whether this column can be searched using the global search box. |
-| `DataTableColumnAttribute.Title` | Sets the column title displayed in the table header. | Sets the column title displayed in the table header. |
-| `DataTableColumnAttribute.Type` | Sets the column's internal data type (used for filtering and sorting logic). | Sets the column's internal data type (used for filtering and sorting logic). |
-| `DataTableColumnAttribute.Visible` | Indicates whether this column is visible in the table. | Indicates whether this column is visible in the table. |
-| `DataTableColumnAttribute.Width` | Sets the fixed width for this column (e.g., "100px", "10%"). | Sets the fixed width for this column (e.g., "100px", "10%"). |
-| `DataTableColumnAttribute.Data` | Specifies the data source for the column. Can be a property path (e.g., "user.email") or a static value. | Specifies the data source for the column. Can be a property path (e.g., "user.email") or a static value. |
-| `DataTableColumnAttribute.ResponsivePriority` | Defines the priority for column visibility when using the DataTables Responsive extension. Lower values have higher priority and are shown first on smaller screens. Columns with higher values will be hidden first as screen space becomes limited. | Defines the priority for column visibility when using the DataTables Responsive extension. Lower values have higher priority and are shown first on smaller screens. Columns with higher values will be hidden first as screen space becomes limited. |
+## Defaults and conventions
+
+- `Visible` defaults to `true`.
+- `Searchable` and `Orderable` default to `false`; opt in explicitly.
+- `Order` and `ResponsivePriority` default to `-1`, which is useful as an “unspecified” sentinel in the consuming mapper.
+- `Data` and `OrderData` are `object` because DataTables accepts more than one value shape. Attribute arguments are restricted by the CLR, so use strings, numeric values, or arrays that your mapper understands.
+- Property names and nested data paths are not validated by this package.
